@@ -5,28 +5,30 @@
 
 /* Headers */
 h1, h2, h3 {
-    color: #28a745;
+    color: var(--primary-color, #28a745);
     margin-bottom: 1.5rem;
 }
 
 /* Metrics styling */
 [data-testid="stMetricValue"] {
     font-size: 2rem !important;
-    color: #28a745 !important;
+    color: var(--primary-color, #28a745) !important;
 }
 
 [data-testid="stMetricDelta"] {
-    color: #6c757d !important;
+    color: var(--text-color, #6c757d) !important;
 }
 
 /* Input fields */
 .stTextInput input, .stNumberInput input {
     border-radius: 5px !important;
+    background-color: var(--secondary-background-color, #f8f9fa) !important;
+    color: var(--text-color, #212529) !important;
 }
 
 /* Buttons */
 .stButton button {
-    background-color: #28a745 !important;
+    background-color: var(--primary-color, #28a745) !important;
     color: white !important;
     border-radius: 5px !important;
     padding: 0.5rem 2rem !important;
@@ -34,7 +36,7 @@ h1, h2, h3 {
 }
 
 .stButton button:hover {
-    background-color: #218838 !important;
+    opacity: 0.9;
 }
 
 /* Tabs styling */
@@ -44,6 +46,7 @@ h1, h2, h3 {
 
 .stTabs [data-baseweb="tab"] {
     height: 4rem;
+    color: var(--text-color, #212529) !important;
 }
 
 /* Dataframe styling */
@@ -53,7 +56,7 @@ h1, h2, h3 {
 
 /* Charts */
 [data-testid="stPlotlyChart"] {
-    background-color: white;
+    background-color: var(--background-color, white);
     border-radius: 5px;
     padding: 1rem;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -61,7 +64,7 @@ h1, h2, h3 {
 
 /* Sidebar */
 .sidebar .sidebar-content {
-    background-color: #f8f9fa;
+    background-color: var(--secondary-background-color, #f8f9fa);
 }
 
 /* Mobile responsiveness */
@@ -69,7 +72,7 @@ h1, h2, h3 {
     .main {
         padding: 1rem;
     }
-    
+
     [data-testid="stMetricValue"] {
         font-size: 1.5rem !important;
     }

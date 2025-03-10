@@ -13,10 +13,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# Load custom CSS
-with open('styles.css') as f:
-    st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-
 # Initialize session state
 if 'goals' not in st.session_state:
     st.session_state.goals = {
@@ -39,8 +35,42 @@ if 'end_time' not in st.session_state:
     st.session_state.end_time = datetime.max.time()
 if 'editing_meal' not in st.session_state:
     st.session_state.editing_meal = None
+if 'theme' not in st.session_state:
+    st.session_state.theme = 'light'
 
-# Sidebar for goals
+# Theme configuration
+if st.session_state.theme == 'dark':
+    st.markdown("""
+        <style>
+        :root {
+            --primary-color: #28a745;
+            --background-color: #0e1117;
+            --secondary-background-color: #262730;
+            --text-color: #fafafa;
+            --font: sans-serif;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+# Load custom CSS
+with open('styles.css') as f:
+    st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+
+# Sidebar for theme and goals
+st.sidebar.title("Settings")
+
+# Theme selector
+theme = st.sidebar.selectbox(
+    "Choose Theme",
+    options=['light', 'dark'],
+    index=0 if st.session_state.theme == 'light' else 1,
+    key='theme_selector'
+)
+
+if theme != st.session_state.theme:
+    st.session_state.theme = theme
+    st.rerun()
+
 st.sidebar.title("Set Your Goals")
 st.session_state.goals['calories'] = st.sidebar.number_input(
     "Daily Calorie Goal",
