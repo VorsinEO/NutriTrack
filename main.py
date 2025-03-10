@@ -37,6 +37,8 @@ if 'start_time' not in st.session_state:
     st.session_state.start_time = datetime.min.time()
 if 'end_time' not in st.session_state:
     st.session_state.end_time = datetime.max.time()
+if 'editing_meal' not in st.session_state:
+    st.session_state.editing_meal = None
 
 # Sidebar for goals
 st.sidebar.title("Set Your Goals")
@@ -245,9 +247,55 @@ with tab3:
     )
     st.plotly_chart(fig_protein, use_container_width=True)
 
-    # Detailed log
+    # Detailed log with edit and delete functionality
     st.subheader("Detailed Log")
-    st.dataframe(
-        filtered_df.sort_values('datetime', ascending=False)[['datetime', 'food_name', 'calories', 'protein']],
-        use_container_width=True
-    )
+
+    # Display each meal entry with edit and delete buttons
+    for idx, row in filtered_df.sort_values('datetime', ascending=False).iterrows():
+        with st.container():
+            col1, col2, col3, col4, col5, col6 = st.columns([2, 1, 1, 1, 0.5, 0.5])
+
+            # If this meal is being edited, show input fields
+            if st.session_state.editing_meal == idx:
+                with col1:
+                    new_food_name = st.text_input("Food Name", value=row['food_name'], key=f"edit_name_{idx}")
+                with col2:
+                    new_datetime = st.text_input("Datetime", value=row['datetime'], key=f"edit_datetime_{idx}")
+                with col3:
+                    new_calories = st.number_input("Calories", value=row['calories'], key=f"edit_calories_{idx}")
+                with col4:
+                    new_protein = st.number_input("Protein", value=row['protein'], key=f"edit_protein_{idx}")
+                with col5:
+                    if st.button("Save", key=f"save_{idx}"):
+                        df.loc[idx, 'food_name'] = new_food_name
+                        df.loc[idx, 'datetime'] = new_datetime
+                        df.loc[idx, 'calories'] = new_calories
+                        df.loc[idx, 'protein'] = new_protein
+                        df.loc[idx, 'date'] = pd.to_datetime(new_datetime).strftime('%Y-%m-%d')
+                        save_data(df)
+                        st.session_state.editing_meal = None
+                        st.rerun()
+                with col6:
+                    if st.button("Cancel", key=f"cancel_{idx}"):
+                        st.session_state.editing_meal = None
+                        st.rerun()
+            else:
+                # Display meal information
+                col1.write(row['food_name'])
+                col2.write(row['datetime'])
+                col3.write(f"{row['calories']} cal")
+                col4.write(f"{row['protein']}g")
+
+                # Edit button
+                if col5.button("✏️", key=f"edit_{idx}"):
+                    st.session_state.editing_meal = idx
+                    st.rerun()
+
+                # Delete button
+                if col6.button("🗑️", key=f"delete_{idx}"):
+                    if st.session_state.editing_meal is None:  # Prevent deletion while editing
+                        df = df.drop(idx)
+                        save_data(df)
+                        st.rerun()
+
+            st.divider()
