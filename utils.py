@@ -13,7 +13,7 @@ def load_data():
         if 'datetime' in df.columns:
             try:
                 df['datetime'] = pd.to_datetime(df['datetime'])
-                df['date'] = df['datetime'].dt.strftime('%Y-%m-%d')
+                df['date'] = df['datetime'].dt.date.astype(str)
             except Exception as e:
                 print(f"Error converting datetime: {e}")
                 # Create datetime from date if time is missing
@@ -27,9 +27,12 @@ def save_data(df):
     # Create a copy to avoid modifying the original DataFrame
     df_save = df.copy()
 
-    # Ensure datetime is in string format for CSV storage
-    if 'datetime' in df_save.columns and not df_save.empty:
-        df_save['datetime'] = df_save['datetime'].dt.strftime('%Y-%m-%d %H:%M:%S')
+    # Convert datetime column to string format for CSV storage
+    if 'datetime' in df_save.columns:
+        # Convert to datetime first to ensure proper formatting
+        df_save['datetime'] = pd.to_datetime(df_save['datetime'])
+        # Then convert to string
+        df_save['datetime'] = df_save['datetime'].astype(str)
 
     df_save.to_csv('data/food_log.csv', index=False)
 
