@@ -24,6 +24,20 @@ if 'goals' not in st.session_state:
         'protein': 150
     }
 
+# Initialize datetime session states
+if 'entry_date' not in st.session_state:
+    st.session_state.entry_date = datetime.now().date()
+if 'entry_time' not in st.session_state:
+    st.session_state.entry_time = datetime.now().time()
+if 'start_date' not in st.session_state:
+    st.session_state.start_date = (datetime.now() - timedelta(days=7)).date()
+if 'end_date' not in st.session_state:
+    st.session_state.end_date = datetime.now().date()
+if 'start_time' not in st.session_state:
+    st.session_state.start_time = datetime.min.time()
+if 'end_time' not in st.session_state:
+    st.session_state.end_time = datetime.max.time()
+
 # Sidebar for goals
 st.sidebar.title("Set Your Goals")
 st.session_state.goals['calories'] = st.sidebar.number_input(
@@ -51,9 +65,19 @@ with tab1:
     # Date and time selection
     col1, col2 = st.columns(2)
     with col1:
-        entry_date = st.date_input("Date", datetime.now())
+        entry_date = st.date_input(
+            "Date",
+            value=st.session_state.entry_date,
+            key="entry_date_input"
+        )
+        st.session_state.entry_date = entry_date
     with col2:
-        entry_time = st.time_input("Time", datetime.now().time())
+        entry_time = st.time_input(
+            "Time",
+            value=st.session_state.entry_time,
+            key="entry_time_input"
+        )
+        st.session_state.entry_time = entry_time
 
     # Combine date and time
     entry_datetime = datetime.combine(entry_date, entry_time)
@@ -153,19 +177,38 @@ with tab3:
     # Date and time range selector
     col1, col2 = st.columns(2)
     with col1:
-        start_datetime = st.date_input(
+        start_date = st.date_input(
             "Start Date",
-            datetime.now() - timedelta(days=7)
+            value=st.session_state.start_date,
+            key="start_date_input"
         )
-        start_time = st.time_input("Start Time", datetime.min.time())
-        start = datetime.combine(start_datetime, start_time)
+        st.session_state.start_date = start_date
+
+        start_time = st.time_input(
+            "Start Time",
+            value=st.session_state.start_time,
+            key="start_time_input"
+        )
+        st.session_state.start_time = start_time
+
+        start = datetime.combine(start_date, start_time)
+
     with col2:
-        end_datetime = st.date_input(
+        end_date = st.date_input(
             "End Date",
-            datetime.now()
+            value=st.session_state.end_date,
+            key="end_date_input"
         )
-        end_time = st.time_input("End Time", datetime.max.time())
-        end = datetime.combine(end_datetime, end_time)
+        st.session_state.end_date = end_date
+
+        end_time = st.time_input(
+            "End Time",
+            value=st.session_state.end_time,
+            key="end_time_input"
+        )
+        st.session_state.end_time = end_time
+
+        end = datetime.combine(end_date, end_time)
 
     # Filter data by datetime range
     df['datetime'] = pd.to_datetime(df['datetime'])
