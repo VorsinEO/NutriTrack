@@ -216,6 +216,28 @@ with tab3:
     df['datetime'] = pd.to_datetime(df['datetime'])
     mask = (df['datetime'] >= pd.Timestamp(start)) & (df['datetime'] <= pd.Timestamp(end))
     filtered_df = df.loc[mask]
+    
+    # Export functionality
+    st.subheader("Export Data")
+    if not filtered_df.empty:
+        # Prepare data for export
+        export_df = filtered_df[['datetime', 'calories', 'protein', 'food_name']].copy()
+        export_df.rename(columns={'calories': 'kcal'}, inplace=True)
+        
+        # Convert to CSV
+        csv = export_df.to_csv(index=False)
+        
+        # Create download button
+        st.download_button(
+            label="Download CSV",
+            data=csv,
+            file_name=f"nutrition_data_{start_date}_to_{end_date}.csv",
+            mime="text/csv",
+            key="download-csv",
+            help="Download the filtered data as a CSV file"
+        )
+    else:
+        st.info("No data available to export in the selected date range.")
 
     # Timeline charts
     daily_calories = filtered_df.groupby('date')['calories'].sum().reset_index()
