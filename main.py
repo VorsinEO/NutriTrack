@@ -42,19 +42,28 @@ if 'theme' not in st.session_state:
 if st.session_state.theme == 'dark':
     st.markdown("""
         <style>
-        :root {
-            --primary-color: #28a745;
-            --background-color: #0e1117;
-            --secondary-background-color: #262730;
-            --text-color: #fafafa;
-            --font: sans-serif;
+        .stApp {
+            background-color: #0e1117;
+            color: #fafafa;
+        }
+        .stTabs [data-baseweb="tab-list"] {
+            background-color: #262730;
+        }
+        .stTabs [data-baseweb="tab"] {
+            color: #fafafa;
+        }
+        .stDataFrame {
+            background-color: #262730;
+        }
+        .css-1n76uvr {
+            background-color: #262730;
+        }
+        .stButton button {
+            background-color: #28a745;
+            color: white;
         }
         </style>
     """, unsafe_allow_html=True)
-
-# Load custom CSS
-with open('styles.css') as f:
-    st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 # Sidebar for theme and goals
 st.sidebar.title("Settings")
@@ -168,13 +177,19 @@ with tab2:
                 'axis': {'range': [0, 100]},
                 'bar': {'color': "#28a745"},
                 'steps': [
-                    {'range': [0, 33], 'color': "lightgray"},
-                    {'range': [33, 66], 'color': "gray"},
-                    {'range': [66, 100], 'color': "darkgray"}
+                    {'range': [0, 33], 'color': "lightgray" if st.session_state.theme == 'light' else "#1e1e1e"},
+                    {'range': [33, 66], 'color': "gray" if st.session_state.theme == 'light' else "#2d2d2d"},
+                    {'range': [66, 100], 'color': "darkgray" if st.session_state.theme == 'light' else "#3d3d3d"}
                 ]
             }
         ))
-        fig_calories.update_layout(height=200, margin=dict(l=20, r=20, t=30, b=20))
+        fig_calories.update_layout(
+            height=200, 
+            margin=dict(l=20, r=20, t=30, b=20),
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font={'color': '#fafafa' if st.session_state.theme == 'dark' else '#212529'}
+        )
         st.plotly_chart(fig_calories, use_container_width=True)
 
     with col2:
@@ -194,13 +209,19 @@ with tab2:
                 'axis': {'range': [0, 100]},
                 'bar': {'color': "#007bff"},
                 'steps': [
-                    {'range': [0, 33], 'color': "lightgray"},
-                    {'range': [33, 66], 'color': "gray"},
-                    {'range': [66, 100], 'color': "darkgray"}
+                    {'range': [0, 33], 'color': "lightgray" if st.session_state.theme == 'light' else "#1e1e1e"},
+                    {'range': [33, 66], 'color': "gray" if st.session_state.theme == 'light' else "#2d2d2d"},
+                    {'range': [66, 100], 'color': "darkgray" if st.session_state.theme == 'light' else "#3d3d3d"}
                 ]
             }
         ))
-        fig_protein.update_layout(height=200, margin=dict(l=20, r=20, t=30, b=20))
+        fig_protein.update_layout(
+            height=200, 
+            margin=dict(l=20, r=20, t=30, b=20),
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font={'color': '#fafafa' if st.session_state.theme == 'dark' else '#212529'}
+        )
         st.plotly_chart(fig_protein, use_container_width=True)
 
 with tab3:
@@ -262,6 +283,11 @@ with tab3:
         line_dash="dash",
         annotation_text="Goal"
     )
+    fig_timeline.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font={'color': '#fafafa' if st.session_state.theme == 'dark' else '#212529'}
+    )
     st.plotly_chart(fig_timeline, use_container_width=True)
 
     fig_protein = px.line(
@@ -274,6 +300,11 @@ with tab3:
         y=st.session_state.goals['protein'],
         line_dash="dash",
         annotation_text="Goal"
+    )
+    fig_protein.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font={'color': '#fafafa' if st.session_state.theme == 'dark' else '#212529'}
     )
     st.plotly_chart(fig_protein, use_container_width=True)
 
