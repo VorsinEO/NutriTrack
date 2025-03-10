@@ -47,20 +47,31 @@ tab1, tab2, tab3 = st.tabs(["Log Entry", "Dashboard", "History"])
 
 with tab1:
     st.header("Log Your Meal")
-    
+
+    # Date and time selection
+    col1, col2 = st.columns(2)
+    with col1:
+        entry_date = st.date_input("Date", datetime.now())
+    with col2:
+        entry_time = st.time_input("Time", datetime.now().time())
+
+    # Combine date and time
+    entry_datetime = datetime.combine(entry_date, entry_time)
+
     col1, col2, col3 = st.columns(3)
-    
+
     with col1:
         food_name = st.text_input("Food Name")
     with col2:
         calories = st.number_input("Calories", min_value=0, max_value=2000)
     with col3:
         protein = st.number_input("Protein (g)", min_value=0, max_value=200)
-    
+
     if st.button("Add Entry"):
         if food_name and calories >= 0 and protein >= 0:
             new_entry = {
-                'date': datetime.now().strftime('%Y-%m-%d'),
+                'datetime': entry_datetime.strftime('%Y-%m-%d %H:%M:%S'),
+                'date': entry_datetime.strftime('%Y-%m-%d'),
                 'food_name': food_name,
                 'calories': calories,
                 'protein': protein
@@ -74,16 +85,16 @@ with tab1:
 
 with tab2:
     st.header("Daily Progress")
-    
+
     # Load and process data
     df = load_data()
     today = datetime.now().strftime('%Y-%m-%d')
     daily_totals = calculate_daily_totals(df)
     today_totals = daily_totals.get(today, {'calories': 0, 'protein': 0})
-    
+
     # Progress metrics
     col1, col2 = st.columns(2)
-    
+
     with col1:
         calories_progress = (today_totals['calories'] / st.session_state.goals['calories']) * 100
         st.metric(
@@ -91,7 +102,7 @@ with tab2:
             f"{today_totals['calories']}/{st.session_state.goals['calories']}",
             f"{calories_progress:.1f}% of daily goal"
         )
-        
+
         # Calories gauge
         fig_calories = go.Figure(go.Indicator(
             mode = "gauge+number",
@@ -109,7 +120,7 @@ with tab2:
         ))
         fig_calories.update_layout(height=200, margin=dict(l=20, r=20, t=30, b=20))
         st.plotly_chart(fig_calories, use_container_width=True)
-        
+
     with col2:
         protein_progress = (today_totals['protein'] / st.session_state.goals['protein']) * 100
         st.metric(
@@ -117,7 +128,7 @@ with tab2:
             f"{today_totals['protein']}/{st.session_state.goals['protein']}g",
             f"{protein_progress:.1f}% of daily goal"
         )
-        
+
         # Protein gauge
         fig_protein = go.Figure(go.Indicator(
             mode = "gauge+number",
@@ -138,29 +149,33 @@ with tab2:
 
 with tab3:
     st.header("History")
-    
-    # Date range selector
+
+    # Date and time range selector
     col1, col2 = st.columns(2)
     with col1:
-        start_date = st.date_input(
+        start_datetime = st.date_input(
             "Start Date",
             datetime.now() - timedelta(days=7)
         )
+        start_time = st.time_input("Start Time", datetime.min.time())
+        start = datetime.combine(start_datetime, start_time)
     with col2:
-        end_date = st.date_input(
+        end_datetime = st.date_input(
             "End Date",
             datetime.now()
         )
-    
-    # Filter data by date range
-    df['date'] = pd.to_datetime(df['date'])
-    mask = (df['date'] >= pd.Timestamp(start_date)) & (df['date'] <= pd.Timestamp(end_date))
+        end_time = st.time_input("End Time", datetime.max.time())
+        end = datetime.combine(end_datetime, end_time)
+
+    # Filter data by datetime range
+    df['datetime'] = pd.to_datetime(df['datetime'])
+    mask = (df['datetime'] >= pd.Timestamp(start)) & (df['datetime'] <= pd.Timestamp(end))
     filtered_df = df.loc[mask]
-    
+
     # Timeline charts
     daily_calories = filtered_df.groupby('date')['calories'].sum().reset_index()
     daily_protein = filtered_df.groupby('date')['protein'].sum().reset_index()
-    
+
     fig_timeline = px.line(
         daily_calories,
         x='date',
@@ -173,7 +188,7 @@ with tab3:
         annotation_text="Goal"
     )
     st.plotly_chart(fig_timeline, use_container_width=True)
-    
+
     fig_protein = px.line(
         daily_protein,
         x='date',
@@ -186,10 +201,10 @@ with tab3:
         annotation_text="Goal"
     )
     st.plotly_chart(fig_protein, use_container_width=True)
-    
+
     # Detailed log
     st.subheader("Detailed Log")
     st.dataframe(
-        filtered_df.sort_values('date', ascending=False)[['date', 'food_name', 'calories', 'protein']],
+        filtered_df.sort_values('datetime', ascending=False)[['datetime', 'food_name', 'calories', 'protein']],
         use_container_width=True
     )
