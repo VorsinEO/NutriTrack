@@ -250,8 +250,11 @@ with tab3:
     # Detailed log with edit and delete functionality
     st.subheader("Detailed Log")
 
+    # Get last 5 entries sorted by datetime
+    sorted_df = filtered_df.sort_values('datetime', ascending=False).head(5)
+
     # Display each meal entry with edit and delete buttons
-    for idx, row in filtered_df.sort_values('datetime', ascending=False).iterrows():
+    for idx, row in sorted_df.iterrows():
         with st.container():
             col1, col2, col3, col4, col5, col6 = st.columns([2, 1, 1, 1, 0.5, 0.5])
 
