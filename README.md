@@ -17,6 +17,11 @@ A Streamlit-based web application for tracking daily nutrition intake, visualizi
 2. Install dependencies: `pip install -r requirements.txt` or using Poetry
 3. Run the application: `streamlit run main.py`
 
+## Deploy and Host
+- after clone it, clean data csv and change in main app your kcal, prt goals.
+- go to Streamlit Community Cloud and deploy it in one minute from github
+- Dont forget export every week data for case if streamlit cloud stop your app (and data is disappear)
+
 ## Usage
 
 1. **Set Goals**: Use the sidebar to configure your daily calorie and protein goals
@@ -36,3 +41,5 @@ A Streamlit-based web application for tracking daily nutrition intake, visualizi
 - `utils.py`: Utility functions for data loading and processing
 - `styles.css`: Custom CSS styles
 - `data/`: Directory containing the food log data
+
+
