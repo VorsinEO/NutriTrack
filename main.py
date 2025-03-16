@@ -20,8 +20,8 @@ with open('styles.css') as f:
 # Initialize session state
 if 'goals' not in st.session_state:
     st.session_state.goals = {
-        'calories': 2000,
-        'protein': 150
+        'calories': 2200,
+        'protein': 130
     }
 
 # Initialize datetime session states
