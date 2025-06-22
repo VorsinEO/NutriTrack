@@ -3,7 +3,6 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
-import numpy as np
 from utils import load_data, save_data, calculate_daily_totals
 
 # Page config
@@ -292,14 +291,18 @@ with tab3:
                     new_protein = st.number_input("Protein", value=row['protein'], key=f"edit_protein_{idx}")
                 with col5:
                     if st.button("Save", key=f"save_{idx}"):
-                        df.loc[idx, 'food_name'] = new_food_name
-                        df.loc[idx, 'datetime'] = new_datetime
-                        df.loc[idx, 'calories'] = new_calories
-                        df.loc[idx, 'protein'] = new_protein
-                        df.loc[idx, 'date'] = pd.to_datetime(new_datetime).strftime('%Y-%m-%d')
-                        save_data(df)
-                        st.session_state.editing_meal = None
-                        st.rerun()
+                        parsed_dt = pd.to_datetime(new_datetime, errors="coerce")
+                        if pd.isna(parsed_dt):
+                            st.error("Invalid datetime format. Use YYYY-MM-DD HH:MM:SS")
+                        else:
+                            df.loc[idx, 'food_name'] = new_food_name
+                            df.loc[idx, 'datetime'] = parsed_dt.strftime('%Y-%m-%d %H:%M:%S')
+                            df.loc[idx, 'calories'] = new_calories
+                            df.loc[idx, 'protein'] = new_protein
+                            df.loc[idx, 'date'] = parsed_dt.strftime('%Y-%m-%d')
+                            save_data(df)
+                            st.session_state.editing_meal = None
+                            st.rerun()
                 with col6:
                     if st.button("Cancel", key=f"cancel_{idx}"):
                         st.session_state.editing_meal = None
