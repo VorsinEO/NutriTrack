@@ -8,5 +8,3 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11 # Укажем версию Python как в pyproject.toml 
-    envVarsFromGroup:
-      - name: nutritrack-secrets # Название вашей группы 
